@@ -558,6 +558,20 @@ function main() {
 			for (var sectionKey in searchLinks.items) if (searchLinks.items.hasOwnProperty(sectionKey)) {
 				addSearchLinksSection([sectionKey], sidebar);
 			}
+			// Search links for related works
+			if (entityType === "recording") {
+				tokenValues["%entity-type%"] = "work";
+				for (var token in tokenValues) if (tokenValues.hasOwnProperty(token)) {
+					if (token.indexOf("%recording-") === 0) {
+						var workToken = token.replace(/^%recording-/, "%work-");
+						tokenValues[workToken] = tokenValues[token];
+						delete tokenValues[token];
+					}
+				}
+				for (var sectionKey in searchLinks.items) if (searchLinks.items.hasOwnProperty(sectionKey)) {
+					addSearchLinksSection([sectionKey], sidebar);
+				}
+			}
 			// User links
 			addUserLinks();
 		}
