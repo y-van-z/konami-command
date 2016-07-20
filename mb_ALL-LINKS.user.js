@@ -365,7 +365,7 @@ function main() {
 								for (var param in target.parameters) if (target.parameters.hasOwnProperty(param)) {
 									if (latinScriptOnly)
 										target.parameters[param] = target.parameters[param].replace(/%artist-name%/, "%artist-latin-script-name%");
-									target.parameters[param] = replaceAllTokens(target.parameters[param]);
+									target.parameters[param] = replaceAllTokens(target.parameters[param], {skipEncodeURIComponent: true});
 									if (!target.parameters[param]) { skippedToken = true; break; }
 								}
 								if (skippedToken) continue;
@@ -586,12 +586,16 @@ function addHiddenLinks() {
 	xhr.open("GET", entityUrlRelsWS, true);
 	xhr.send(null);
 }
-function replaceAllTokens(string) {
+function replaceAllTokens(string, options) {
 	var stringTokens = string.match(/%[a-z]+(?:-[a-z]+)+%/g);
 	if (stringTokens)	for (var t = 0; t < stringTokens.length; t++) {
 		var token = stringTokens[t];
 		if (!tokenValues.hasOwnProperty(token)) return false;
-		string = string.replace(token, encodeURIComponent(tokenValues[token]));
+		var replacement = tokenValues[token];
+		if (!(options && options.skipEncodeURIComponent)) {
+			replacement = encodeURIComponent(replacement);
+		}
+		string = string.replace(token, replacement);
 	}
 	return string;
 }
